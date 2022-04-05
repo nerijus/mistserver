@@ -416,6 +416,14 @@ void uploadThread(void * num){
       upper.setHeader("Accept", "multipart/mixed");
       upper.setHeader("Content-Duration", JSON::Value(mySeg.segDuration).asString());
       upper.setHeader("Content-Resolution", JSON::Value(mySeg.width).asString()+"x"+JSON::Value(mySeg.height).asString());
+
+      // If the Livepeer API Key hasn't been set then we send the configuration as an HTTP header rather than pushing to the API
+      if (!Mist::opt.isMember("access_token") || !Mist::opt["access_token"] || !Mist::opt["access_token"].isString()){
+        JSON::Value tc;
+        tc["profiles"] = Mist::opt["target_profiles"];
+        upper.setHeader("Livepeer-Transcode-Configuration", tc.toString());
+      }
+
       uint64_t uplTime = Util::getMicros();
       if (upper.post(target, mySeg.data, mySeg.data.size())){
         uplTime = Util::getMicros(uplTime);
@@ -564,9 +572,13 @@ int main(int argc, char *argv[]){
     capa["optional"]["audio_select"]["type"] = "track_selector_parameter";
     capa["optional"]["audio_select"]["default"] = "none";
 
-    capa["required"]["access_token"]["name"] = "Access token";
-    capa["required"]["access_token"]["help"] = "Your livepeer access token";
-    capa["required"]["access_token"]["type"] = "string";
+    capa["optional"]["access_token"]["name"] = "Access token";
+    capa["optional"]["access_token"]["help"] = "Your livepeer access token";
+    capa["optional"]["access_token"]["type"] = "string";
+
+    capa["optional"]["hardcoded_broadcasters"]["name"] = "Hardcoded Broadcasters";
+    capa["optional"]["hardcoded_broadcasters"]["help"] = "Use hardcoded broadcasters, rather than using Livepeer's gateway.";
+    capa["optional"]["hardcoded_broadcasters"]["type"] = "string";
 
     capa["optional"]["leastlive"]["name"] = "Start in the past";
     capa["optional"]["leastlive"]["help"] = "Start the transcode as far back in the past as possible, instead of at the most-live point of the stream.";
@@ -790,13 +802,20 @@ int main(int argc, char *argv[]){
  
   //Connect to livepeer API
   HTTP::Downloader dl;
-  dl.setHeader("Authorization", "Bearer "+Mist::opt["access_token"].asStringRef());
-  //Get broadcaster list, pick first valid address
-  if (!dl.get(HTTP::URL(api_url+"/broadcaster"))){
-    FAIL_MSG("Livepeer API responded negatively to request for broadcaster list");
-    return 1;
+  if (!Mist::opt.isMember("access_token") || !Mist::opt["access_token"] || !Mist::opt["access_token"].isString()){
+    dl.setHeader("Authorization", "Bearer "+Mist::opt["access_token"].asStringRef());
   }
-  Mist::lpBroad = JSON::fromString(dl.data());
+
+  if (Mist::opt.isMember("hardcoded_broadcasters") && Mist::opt["hardcoded_broadcasters"] && Mist::opt["hardcoded_broadcasters"].isString()){
+    Mist::lpBroad = JSON::fromString(Mist::opt["hardcoded_broadcasters"].asStringRef());
+  } else {
+    //Get broadcaster list, pick first valid address
+    if (!dl.get(HTTP::URL(api_url+"/broadcaster"))){
+      FAIL_MSG("Livepeer API responded negatively to request for broadcaster list");
+      return 1;
+    }
+    Mist::lpBroad = JSON::fromString(dl.data());
+  }
   if (!Mist::lpBroad || !Mist::lpBroad.isArray()){
     FAIL_MSG("No Livepeer broadcasters available");
     return 1;
@@ -807,24 +826,29 @@ int main(int argc, char *argv[]){
     return 1;
   }
   INFO_MSG("Using broadcaster: %s", Mist::currBroadAddr.c_str());
-
-  //send transcode request
-  dl.setHeader("Content-Type", "application/json");
-  dl.setHeader("Authorization", "Bearer "+Mist::opt["access_token"].asStringRef());
-  if (!dl.post(HTTP::URL(api_url+"/stream"), pl.toString())){
-    FAIL_MSG("Livepeer API responded negatively to encode request");
-    return 1;
+  if (Mist::opt.isMember("access_token") && Mist::opt["access_token"] && Mist::opt["access_token"].isString()){
+    //send transcode request
+    dl.setHeader("Content-Type", "application/json");
+    dl.setHeader("Authorization", "Bearer "+Mist::opt["access_token"].asStringRef());
+    if (!dl.post(HTTP::URL(api_url+"/stream"), pl.toString())){
+      FAIL_MSG("Livepeer API responded negatively to encode request");
+      return 1;
+    }
+    Mist::lpEnc = JSON::fromString(dl.data());
+    if (!Mist::lpEnc){
+      FAIL_MSG("Livepeer API did not respond with JSON");
+      return 1;
+    }
+    if (!Mist::lpEnc.isMember("id")){
+      FAIL_MSG("Livepeer API did not respond with a valid ID: %s", dl.data().data());
+      return 1;
+    }
+    Mist::lpID = Mist::lpEnc["id"].asStringRef();
+  } else {
+    // We don't want to use the same manifest ids for multiple proceses on the same stream
+    // name, so we append a random string to the upload URL.
+    Mist::lpID = Mist::opt["source"].asStringRef() + "-" + Util::generateRandomString(8);
   }
-  Mist::lpEnc = JSON::fromString(dl.data());
-  if (!Mist::lpEnc){
-    FAIL_MSG("Livepeer API did not respond with JSON");
-    return 1;
-  }
-  if (!Mist::lpEnc.isMember("id")){
-    FAIL_MSG("Livepeer API did not respond with a valid ID: %s", dl.data().data());
-    return 1;
-  }
-  Mist::lpID = Mist::lpEnc["id"].asStringRef();
 
   INFO_MSG("Livepeer transcode ID: %s", Mist::lpID.c_str());
   uint64_t lastProcUpdate = Util::bootSecs();

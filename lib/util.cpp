@@ -149,7 +149,21 @@ namespace Util{
     }
   }
 
-  /// 64-bits version of ftell
+  std::string generateRandomString(const int len)
+  {
+    static const char alphanum[] = "0123456789"
+                                   "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                                   "abcdefghijklmnopqrstuvwxyz";
+
+    std::string s;
+    for (int i = 0; i < len; ++i)
+    {
+      s.push_back(alphanum[rand() % (sizeof(alphanum) - 1)]);
+    }
+
+    return s;
+  }
+
   uint64_t ftell(FILE *stream){
     /// \TODO Windows implementation (e.g. _ftelli64 ?)
     return ftello(stream);

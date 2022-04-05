@@ -13,6 +13,7 @@ namespace Util{
   bool createPath(const std::string &path);
   bool stringScan(const std::string &src, const std::string &pattern, std::deque<std::string> &result);
   void stringToLower(std::string &val);
+  std::string generateRandomString(const int len);
 
   uint64_t ftell(FILE *stream);
   uint64_t fseek(FILE *stream, uint64_t offset, int whence);
