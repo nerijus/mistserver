@@ -3,11 +3,7 @@ $(function () {
     menu: $("nav > .menu"),
     main: $("main"),
     header: $("header"),
-    connection: {
-      status: $("#connection"),
-      user_and_host: $("#user_and_host"),
-      msg: $("#message"),
-    },
+    header_title: $("#header_title"),
   };
   UI.buildMenu();
   UI.stored.getOpts();
@@ -475,8 +471,6 @@ var UI = {
   },
   menu: [
     {
-      Overview: {},
-      Protocols: {},
       Streams: {
         hiddenmenu: {
           Edit: {},
@@ -490,38 +484,87 @@ var UI = {
       Triggers: {
         LTSonly: false,
       },
-      Logs: {},
-      Statistics: {},
-      "Server Stats": {},
-    },
-    {
-      Disconnect: {
-        classes: ["red"],
+      Settings: {
+        LTSonly: false,
       },
     },
     {
-      Guides: {
-        link: "http://mistserver.org/documentation#Userdocs",
-      },
-      Tools: {
+      BottomCard: {
         submenu: {
-          "Release notes": {
-            link: "http://mistserver.org/documentation#Devdocs",
+          Status: {
+            value: "Connected",
           },
-          "Mist Shop": {
-            link: "http://mistserver.org/products",
+          Active: {
+            value: 0,
           },
-          "Email for Help": {},
+          Connections: {
+            value: 0,
+          },
         },
       },
     },
   ],
   buildMenu: function () {
     function createButton(j, button) {
-      var $button = $("<a>").addClass("button");
-      $button
-        .html($("<span>").addClass("plain").text(j))
-        .append($("<span>").addClass("highlighted").text(j));
+      var $button;
+      if ("submenu" in button) {
+        $button = $("<div>").addClass("bottom");
+      } else {
+        $button = $("<a>").addClass("button");
+      }
+      if (j == "Streams") {
+        $button
+          .html(
+            $(
+              '<svg width="16" height="18" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0)"><path d="M11.155 1.47153C8.33041 1.00949 5.4477 1.00949 2.62309 1.47153C1.00782 1.80449 0 2.83053 0 4.16915V8.92565C0 10.2846 1.00782 11.2971 2.6507 11.6436C4.05577 11.8765 5.478 11.9947 6.90286 11.997C6.20797 4.52249 12.5714 11.25 12.5714 11.25C13.974 10.8496 13.8057 10.2914 13.8057 8.93244V4.17594C13.8057 2.82374 12.7703 1.76372 11.155 1.47153ZM9.15319 6.86676L5.70176 8.90526C5.64777 8.93765 5.5855 8.95415 5.52229 8.95283C5.46236 8.95235 5.40333 8.9384 5.34971 8.91206C5.29544 8.87964 5.25087 8.83362 5.22055 8.7787C5.19023 8.7238 5.17525 8.66196 5.17714 8.59949V4.52249C5.17766 4.46231 5.19379 4.40326 5.22399 4.35094C5.25419 4.29862 5.29747 4.25475 5.34971 4.22351C5.40385 4.19496 5.46432 4.18002 5.52574 4.18002C5.58715 4.18002 5.64762 4.19496 5.70176 4.22351L9.15319 6.26201C9.20306 6.29332 9.24413 6.3365 9.27261 6.38758C9.301 6.43864 9.31592 6.49595 9.31592 6.55419C9.31592 6.61243 9.301 6.66973 9.27261 6.7208C9.24413 6.77187 9.20306 6.81506 9.15319 6.84638V6.86676Z" fill="#A3ACB9"></path><path d="M13.4407 5.97153C10.6161 5.50949 7.73335 5.50949 4.90873 5.97153C3.29346 6.30449 2.28564 7.33053 2.28564 8.66915V13.4256C2.28564 14.7846 3.29346 15.7971 4.93634 16.1436C6.34142 16.3765 7.76365 16.4947 9.1885 16.497C10.6177 16.4966 12.0446 16.3808 13.4545 16.1504C15.0559 15.8515 16.0914 14.7914 16.0914 13.4324V8.67594C16.0914 7.32374 15.0559 6.26372 13.4407 5.97153ZM11.4388 11.3668L7.9874 13.4053C7.93342 13.4376 7.87114 13.4542 7.80793 13.4528C7.74801 13.4524 7.68898 13.4384 7.63536 13.4121C7.58109 13.3796 7.53651 13.3336 7.5062 13.2787C7.47588 13.2238 7.4609 13.162 7.46279 13.0995V9.02249C7.46331 8.96231 7.47943 8.90326 7.50963 8.85094C7.53983 8.79862 7.58311 8.75475 7.63536 8.72351C7.68949 8.69496 7.74996 8.68002 7.81138 8.68002C7.8728 8.68002 7.93327 8.69496 7.9874 8.72351L11.4388 10.762C11.4887 10.7933 11.5298 10.8365 11.5583 10.8876C11.5866 10.9386 11.6016 10.9959 11.6016 11.0542C11.6016 11.1124 11.5866 11.1697 11.5583 11.2208C11.5298 11.2719 11.4887 11.3151 11.4388 11.3464V11.3668Z" fill="#4F566B"></path></g><defs><clipPath id="clip0"><rect width="16" height="18" fill="white"></rect></clipPath></defs></svg>'
+            )
+          )
+          .append($("<span>").addClass("plain").text(j));
+      } else if (j == "Streams") {
+        $button
+          .html(
+            $(
+              '<svg width="16" height="18" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0)"><path d="M11.155 1.47153C8.33041 1.00949 5.4477 1.00949 2.62309 1.47153C1.00782 1.80449 0 2.83053 0 4.16915V8.92565C0 10.2846 1.00782 11.2971 2.6507 11.6436C4.05577 11.8765 5.478 11.9947 6.90286 11.997C6.20797 4.52249 12.5714 11.25 12.5714 11.25C13.974 10.8496 13.8057 10.2914 13.8057 8.93244V4.17594C13.8057 2.82374 12.7703 1.76372 11.155 1.47153ZM9.15319 6.86676L5.70176 8.90526C5.64777 8.93765 5.5855 8.95415 5.52229 8.95283C5.46236 8.95235 5.40333 8.9384 5.34971 8.91206C5.29544 8.87964 5.25087 8.83362 5.22055 8.7787C5.19023 8.7238 5.17525 8.66196 5.17714 8.59949V4.52249C5.17766 4.46231 5.19379 4.40326 5.22399 4.35094C5.25419 4.29862 5.29747 4.25475 5.34971 4.22351C5.40385 4.19496 5.46432 4.18002 5.52574 4.18002C5.58715 4.18002 5.64762 4.19496 5.70176 4.22351L9.15319 6.26201C9.20306 6.29332 9.24413 6.3365 9.27261 6.38758C9.301 6.43864 9.31592 6.49595 9.31592 6.55419C9.31592 6.61243 9.301 6.66973 9.27261 6.7208C9.24413 6.77187 9.20306 6.81506 9.15319 6.84638V6.86676Z" fill="#A3ACB9"></path><path d="M13.4407 5.97153C10.6161 5.50949 7.73335 5.50949 4.90873 5.97153C3.29346 6.30449 2.28564 7.33053 2.28564 8.66915V13.4256C2.28564 14.7846 3.29346 15.7971 4.93634 16.1436C6.34142 16.3765 7.76365 16.4947 9.1885 16.497C10.6177 16.4966 12.0446 16.3808 13.4545 16.1504C15.0559 15.8515 16.0914 14.7914 16.0914 13.4324V8.67594C16.0914 7.32374 15.0559 6.26372 13.4407 5.97153ZM11.4388 11.3668L7.9874 13.4053C7.93342 13.4376 7.87114 13.4542 7.80793 13.4528C7.74801 13.4524 7.68898 13.4384 7.63536 13.4121C7.58109 13.3796 7.53651 13.3336 7.5062 13.2787C7.47588 13.2238 7.4609 13.162 7.46279 13.0995V9.02249C7.46331 8.96231 7.47943 8.90326 7.50963 8.85094C7.53983 8.79862 7.58311 8.75475 7.63536 8.72351C7.68949 8.69496 7.74996 8.68002 7.81138 8.68002C7.8728 8.68002 7.93327 8.69496 7.9874 8.72351L11.4388 10.762C11.4887 10.7933 11.5298 10.8365 11.5583 10.8876C11.5866 10.9386 11.6016 10.9959 11.6016 11.0542C11.6016 11.1124 11.5866 11.1697 11.5583 11.2208C11.5298 11.2719 11.4887 11.3151 11.4388 11.3464V11.3668Z" fill="#4F566B"></path></g><defs><clipPath id="clip0"><rect width="16" height="18" fill="white"></rect></clipPath></defs></svg>'
+            )
+          )
+          .append($("<span>").addClass("plain").text(j));
+      } else if (j == "Push") {
+        $button
+          .html(
+            $(
+              `
+              <svg width="15" height="12" viewBox="0 0 15 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 0.666656C10.368 0.666656 10.6667 0.965323 10.6667 1.33332V4.13332L14.142 1.69999C14.2927 1.59466 14.5007 1.63132 14.6067 1.78266C14.6453 1.83866 14.6667 1.90532 14.6667 1.97332V10.0267C14.6667 10.2107 14.5173 10.36 14.3333 10.36C14.2647 10.36 14.198 10.3387 14.142 10.3L10.6667 7.86666V10.6667C10.6667 11.0347 10.368 11.3333 10 11.3333H0.666667C0.298667 11.3333 0 11.0347 0 10.6667V1.33332C0 0.965323 0.298667 0.666656 0.666667 0.666656H10ZM5.33333 3.33332L2.66667 5.99999H4.66667V8.66666H6V5.99999H8L5.33333 3.33332Z" fill="#5F5B7B"/>
+              </svg>
+              `
+            )
+          )
+          .append($("<span>").addClass("plain").text(j));
+      } else if (j == "Triggers") {
+        $button
+          .html(
+            $(
+              `
+              <svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3.33333 2.33334H5.33333V8.33334H3.33333V10.3333H2V8.33334H0V2.33334H2V0.333344H3.33333V2.33334ZM10 5.66668H12V11.6667H10V13.6667H8.66667V11.6667H6.66667V5.66668H8.66667V3.66668H10V5.66668Z" fill="#515669"/>
+              </svg>
+              `
+            )
+          )
+          .append($("<span>").addClass("plain").text(j));
+      } else if (j == "Settings") {
+        $button
+          .html(
+            $(
+              `
+              <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2.80811 1.72418C3.6725 0.949881 4.68778 0.362845 5.79007 0C6.10525 0.394863 6.50538 0.713605 6.96072 0.932527C7.41606 1.15145 7.91488 1.26492 8.42011 1.26451C8.92534 1.26492 9.42417 1.15145 9.8795 0.932527C10.3348 0.713605 10.735 0.394863 11.0502 0C12.1524 0.362845 13.1677 0.949881 14.0321 1.72418C13.8482 2.19433 13.7725 2.69987 13.8107 3.20327C13.8488 3.70668 13.9999 4.19502 14.2527 4.63204C14.5049 5.0699 14.8526 5.44526 15.2699 5.73022C15.6872 6.01517 16.1634 6.20238 16.663 6.27793C16.8992 7.41354 16.8992 8.58561 16.663 9.72123C15.6864 9.87109 14.7856 10.4453 14.2527 11.3671C13.9998 11.8042 13.8486 12.2927 13.8105 12.7963C13.7723 13.2999 13.848 13.8056 14.0321 14.2758C13.1676 15.0498 12.1524 15.6366 11.0502 15.9992C10.7349 15.6044 10.3347 15.2859 9.87939 15.0671C9.42406 14.8483 8.92527 14.735 8.42011 14.7355C7.91488 14.7351 7.41606 14.8485 6.96072 15.0675C6.50538 15.2864 6.10525 15.6051 5.79007 16C4.68785 15.6374 3.67258 15.0507 2.80811 14.2767C2.99219 13.8064 3.06795 13.3007 3.02977 12.7971C2.99158 12.2936 2.84043 11.8051 2.58754 11.368C2.33522 10.9303 1.98749 10.5551 1.57019 10.2703C1.1529 9.98545 0.676781 9.79837 0.177228 9.72291C-0.0590761 8.58703 -0.0590761 7.41466 0.177228 6.27877C0.676857 6.20322 1.15303 6.01601 1.57032 5.73106C1.98762 5.4461 2.33531 5.07074 2.58754 4.63289C2.8403 4.19586 2.99138 3.70752 3.02956 3.20412C3.06775 2.70071 2.99206 2.19517 2.80811 1.72502V1.72418ZM9.68294 10.1868C9.97249 10.0222 10.2266 9.80189 10.4307 9.53864C10.6348 9.2754 10.7848 8.97439 10.872 8.65295C10.9593 8.3315 10.9821 7.99596 10.9392 7.66566C10.8963 7.33535 10.7884 7.0168 10.6219 6.72835C10.4553 6.43989 10.2334 6.18723 9.96879 5.9849C9.7042 5.78258 9.4022 5.63458 9.08018 5.54945C8.75816 5.46431 8.42248 5.44371 8.09247 5.48883C7.76246 5.53396 7.44463 5.64391 7.15729 5.81237C6.58193 6.14967 6.16334 6.70085 5.99287 7.34564C5.82239 7.99043 5.91388 8.67647 6.24736 9.25406C6.58084 9.83164 7.12923 10.2539 7.77288 10.4286C8.41652 10.6034 9.10315 10.5164 9.68294 10.1868Z" fill="#515669"/>
+              </svg>
+              `
+            )
+          )
+          .append($("<span>").addClass("plain").text(j));
+      }
       for (var k in button.classes) {
         $button.addClass(button.classes[k]);
       }
@@ -541,7 +584,6 @@ var UI = {
       }
       return $button;
     }
-
     var $menu = UI.elements.menu;
     for (var i in UI.menu) {
       if (i > 0) {
@@ -552,10 +594,19 @@ var UI = {
         var $button = createButton(j, button);
         $menu.append($button);
         if ("submenu" in button) {
-          var $sub = $("<span>").addClass("submenu");
-          $button.addClass("arrowdown").append($sub);
+          var active = mist.data.active_streams
+            ? mist.data.active_streams.length
+            : 0;
+
           for (var k in button.submenu) {
-            $sub.append(createButton(k, button.submenu[k]));
+            var $sub = $("<div>").addClass("submenu item");
+            $sub.append($("<div>").addClass("title").text(k));
+            $sub.append(
+              $("<div>")
+                .addClass("value")
+                .text(k == "Active" ? active : button.submenu[k].value)
+            );
+            $button.append($sub);
           }
         } else if ("hiddenmenu" in button) {
           var $sub = $("<span>").addClass("hiddenmenu");
@@ -566,19 +617,6 @@ var UI = {
         }
       }
     }
-
-    var $ihb = $("<div>")
-      .attr("id", "ih_button")
-      .text("?")
-      .click(function () {
-        $("body").toggleClass("helpme");
-        UI.stored.saveOpt("helpme", $("body").hasClass("helpme"));
-      })
-      .attr("title", "Click to toggle the display of integrated help");
-    if (UI.stored.getOpts().helpme) {
-      $("body").addClass("helpme");
-    }
-    $menu.after($ihb).after($("<div>").addClass("separator"));
   },
   findInput: function (name) {
     return this.findInOutput("inputs", name);
@@ -2547,34 +2585,34 @@ var UI = {
       return num;
     },
     status: function (item) {
-      var $s = $("<span>");
+      var $s = $("<div>");
 
       if (typeof item.online == "undefined") {
         $s.text("Unknown, checking..");
         if (typeof item.error != "undefined") {
-          $s.text(item.error);
+          $s.addClass(`status ${item.error}`);
         }
         return $s;
       }
 
       switch (item.online) {
         case -1:
-          $s.text("Enabling");
+          $s.addClass("status enabling");
           break;
         case 0:
-          $s.text("Unavailable").addClass("red");
+          $s.addClass("status unavailable");
           break;
         case 1:
-          $s.text("Active").addClass("green");
+          $s.addClass("status active");
           break;
         case 2:
-          $s.text("Standby").addClass("orange");
+          $s.addClass("status available");
           break;
         default:
-          $s.text(item.online);
+          $s.addClass("status standby");
       }
       if ("error" in item) {
-        $s.text(item.error);
+        $s.addClass(`status ${item.error}`);
       }
       return $s;
     },
@@ -2663,12 +2701,12 @@ var UI = {
           UI.navto("Overview");
           return;
         }
-        document.title = "MistServer MI";
-        UI.elements.menu.addClass("hide");
-        UI.elements.connection.status
-          .text("Disconnected")
-          .removeClass("green")
-          .addClass("red");
+        // document.title = "MistServer MI";
+        // UI.elements.menu.addClass("hide");
+        // UI.elements.connection.status
+        //   .text("Disconnected")
+        //   .removeClass("green")
+        //   .addClass("red");
         $main.append(
           UI.buildUI([
             {
@@ -2920,9 +2958,6 @@ var UI = {
           debug: mist.data.config.debug,
           accesslog: mist.data.config.accesslog,
           prometheus: mist.data.config.prometheus,
-          sessionViewerMode: mist.data.config.sessionViewerMode,
-          sessionInputMode: mist.data.config.sessionInputMode,
-          sessionOutputMode: mist.data.config.sessionOutputMode,
           defaultStream: mist.data.config.defaultStream,
           trustedproxy: mist.data.config.trustedproxy,
           location:
@@ -3084,192 +3119,6 @@ var UI = {
                 host +
                 "/PASSPHRASE.json.",
               LTSonly: true,
-            },
-            {
-              type: "select",
-              label: "Viewer sessions",
-              select: [
-                [
-                  15,
-                  "15 - All connections with the same stream name, viewer ip, player id and protocol are bundled",
-                ],
-                [
-                  14,
-                  "14 - All connections with the same stream name, viewer ip and player id are bundled",
-                ],
-                [
-                  13,
-                  "13 - All connections with the same stream name, viewer ip and protocol are bundled",
-                ],
-                [
-                  12,
-                  "12 - All connections with the same stream name and viewer ip are bundled",
-                ],
-                [
-                  11,
-                  "11 - All connections with the same stream name, player id and protocol are bundled",
-                ],
-                [
-                  10,
-                  "10 - All connections with the same stream name and player id are bundled",
-                ],
-                [
-                  9,
-                  "9 - All connections with the same stream name and protocol are bundled",
-                ],
-                [
-                  8,
-                  "8 - All connections with the same stream name are bundled",
-                ],
-                [
-                  7,
-                  "7 - All connections with the same viewer ip, player id and protocol are bundled",
-                ],
-                [
-                  6,
-                  "6 - All connections with the same viewer ip and player id are bundled",
-                ],
-                [
-                  5,
-                  "5 - All connections with the same viewer ip and protocol are bundled",
-                ],
-                [4, "4 - All connections with the same viewer ip are bundled"],
-                [
-                  3,
-                  "3 - All connections with the same player id and protocol are bundled",
-                ],
-                [2, "2 - All connections with the same player id are bundled"],
-                [1, "1 - All connections with the same protocol are bundled"],
-              ],
-              pointer: {
-                main: s,
-                index: "sessionViewerMode",
-              },
-              help: "Change the way viewer connections are bundled into sessions.",
-            },
-            {
-              type: "select",
-              label: "Input sessions",
-              select: [
-                [
-                  15,
-                  "15 - All connections with the same stream name, viewer ip, player id and protocol are bundled",
-                ],
-                [
-                  14,
-                  "14 - All connections with the same stream name, viewer ip and player id are bundled",
-                ],
-                [
-                  13,
-                  "13 - All connections with the same stream name, viewer ip and protocol are bundled",
-                ],
-                [
-                  12,
-                  "12 - All connections with the same stream name and viewer ip are bundled",
-                ],
-                [
-                  11,
-                  "11 - All connections with the same stream name, player id and protocol are bundled",
-                ],
-                [
-                  10,
-                  "10 - All connections with the same stream name and player id are bundled",
-                ],
-                [
-                  9,
-                  "9 - All connections with the same stream name and protocol are bundled",
-                ],
-                [
-                  8,
-                  "8 - All connections with the same stream name are bundled",
-                ],
-                [
-                  7,
-                  "7 - All connections with the same viewer ip, player id and protocol are bundled",
-                ],
-                [
-                  6,
-                  "6 - All connections with the same viewer ip and player id are bundled",
-                ],
-                [
-                  5,
-                  "5 - All connections with the same viewer ip and protocol are bundled",
-                ],
-                [4, "4 - All connections with the same viewer ip are bundled"],
-                [
-                  3,
-                  "3 - All connections with the same player id and protocol are bundled",
-                ],
-                [2, "2 - All connections with the same player id are bundled"],
-                [1, "1 - All connections with the same protocol are bundled"],
-              ],
-              pointer: {
-                main: s,
-                index: "sessionInputMode",
-              },
-              help: "Change the way input connections are bundled into sessions.",
-            },
-            {
-              type: "select",
-              label: "Output sessions",
-              select: [
-                [
-                  15,
-                  "15 - All connections with the same stream name, viewer ip, player id and protocol are bundled",
-                ],
-                [
-                  14,
-                  "14 - All connections with the same stream name, viewer ip and player id are bundled",
-                ],
-                [
-                  13,
-                  "13 - All connections with the same stream name, viewer ip and protocol are bundled",
-                ],
-                [
-                  12,
-                  "12 - All connections with the same stream name and viewer ip are bundled",
-                ],
-                [
-                  11,
-                  "11 - All connections with the same stream name, player id and protocol are bundled",
-                ],
-                [
-                  10,
-                  "10 - All connections with the same stream name and player id are bundled",
-                ],
-                [
-                  9,
-                  "9 - All connections with the same stream name and protocol are bundled",
-                ],
-                [
-                  8,
-                  "8 - All connections with the same stream name are bundled",
-                ],
-                [
-                  7,
-                  "7 - All connections with the same viewer ip, player id and protocol are bundled",
-                ],
-                [
-                  6,
-                  "6 - All connections with the same viewer ip and player id are bundled",
-                ],
-                [
-                  5,
-                  "5 - All connections with the same viewer ip and protocol are bundled",
-                ],
-                [4, "4 - All connections with the same viewer ip are bundled"],
-                [
-                  3,
-                  "3 - All connections with the same player id and protocol are bundled",
-                ],
-                [2, "2 - All connections with the same player id are bundled"],
-                [1, "1 - All connections with the same protocol are bundled"],
-              ],
-              pointer: {
-                main: s,
-                index: "sessionOutputMode",
-              },
-              help: "Change the way output connections are bundled into sessions.",
             },
             {
               type: "inputlist",
@@ -4003,6 +3852,10 @@ var UI = {
         }
         break;
       case "Streams":
+        // Streams Page
+        document.title = "Streams: Livepeer Project Aqueduct";
+        UI.elements.header_title.text("Streams");
+
         if (!("capabilities" in mist.data)) {
           $main.html("Loading..");
           mist.send(
@@ -4016,27 +3869,14 @@ var UI = {
 
         var $switchmode = $("<button>");
         var $loading = $("<span>").text("Loading..");
+        // Create a new stream and Switch to thumbnail view buttons
         $main
           .append(
             UI.buildUI([
               {
                 type: "help",
-                help: "Here you can create, edit or delete new and existing streams. Go to stream preview or embed a video player on your website.",
+                help: "Here is a place for some helper text about streams.",
               },
-              $("<div>")
-                .css({
-                  width: "45.25em",
-                  display: "flex",
-                  "justify-content": "flex-end",
-                })
-                .append($switchmode)
-                .append(
-                  $("<button>")
-                    .text("Create a new stream")
-                    .click(function () {
-                      UI.navto("Edit");
-                    })
-                ),
             ])
           )
           .append($loading);
@@ -4254,25 +4094,23 @@ var UI = {
                     $("<tr>")
                       .html(
                         $("<th>")
+                          .css("width", "40%")
                           .text("Stream name")
                           .attr("data-sort-type", "string")
                           .addClass("sorting-asc")
                       )
                       .append(
                         $("<th>")
-                          .text("Source")
-                          .attr("data-sort-type", "string")
-                      )
-                      .append(
-                        $("<th>").text("Status").attr("data-sort-type", "int")
+                          .css("width", "40%")
+                          .text("Status")
+                          .attr("data-sort-type", "int")
                       )
                       .append(
                         $("<th>")
-                          .css("text-align", "right")
+                          .css("text-align", "left")
                           .text("Connections")
                           .attr("data-sort-type", "int")
                       )
-                      .append($("<th>"))
                       .append($("<th>"))
                   )
                 )
@@ -4295,7 +4133,7 @@ var UI = {
                   }
 
                   var $viewers = $("<td>")
-                    .css("text-align", "right")
+                    .css("text-align", "left")
                     .html(
                       $("<span>").addClass("description").text("Loading..")
                     );
@@ -4320,45 +4158,41 @@ var UI = {
                     stream.online = 2;
                   }
                   var $buttons = $("<td>")
-                    .css("text-align", "right")
+                    .css("text-align", "left")
                     .css("white-space", "nowrap");
                   if (!("ischild" in stream) || !stream.ischild) {
-                    $buttons
-                      .html(
-                        $("<button>")
-                          .text("Settings")
-                          .click(function () {
-                            UI.navto(
-                              "Edit",
-                              $(this).closest("tr").data("index")
-                            );
-                          })
-                      )
-                      .append(
-                        $("<button>")
-                          .text("Delete")
-                          .click(function () {
-                            var index = $(this).closest("tr").data("index");
-                            if (
-                              confirm(
-                                'Are you sure you want to delete the stream "' +
-                                  index +
-                                  '"?'
-                              )
-                            ) {
-                              delete mist.data.streams[index];
-                              var send = {};
-                              if (mist.data.LTS) {
-                                send.deletestream = [index];
-                              } else {
-                                send.streams = mist.data.streams;
-                              }
-                              mist.send(function (d) {
-                                UI.navto("Streams");
-                              }, send);
-                            }
-                          })
-                      );
+                    $buttons.html(
+                      $("<button>")
+                        .text("Settings")
+                        .click(function () {
+                          UI.navto("Edit", $(this).closest("tr").data("index"));
+                        })
+                    );
+                    // .append(
+                    //   $("<button>")
+                    //     .text("Delete")
+                    //     .click(function () {
+                    //       var index = $(this).closest("tr").data("index");
+                    //       if (
+                    //         confirm(
+                    //           'Are you sure you want to delete the stream "' +
+                    //             index +
+                    //             '"?'
+                    //         )
+                    //       ) {
+                    //         delete mist.data.streams[index];
+                    //         var send = {};
+                    //         if (mist.data.LTS) {
+                    //           send.deletestream = [index];
+                    //         } else {
+                    //           send.streams = mist.data.streams;
+                    //         }
+                    //         mist.send(function (d) {
+                    //           UI.navto("Streams");
+                    //         }, send);
+                    //       }
+                    //     })
+                    // );
                   }
 
                   var $streamnamelabel = $("<span>").text(stream.name);
@@ -4370,11 +4204,6 @@ var UI = {
                     .text("Preview")
                     .click(function () {
                       UI.navto("Preview", $(this).closest("tr").data("index"));
-                    });
-                  var $embed = $("<button>")
-                    .text("Embed")
-                    .click(function () {
-                      UI.navto("Embed", $(this).closest("tr").data("index"));
                     });
                   if (
                     "filesfound" in allstreams[streamname] ||
@@ -4399,14 +4228,14 @@ var UI = {
                           )
                           .addClass("overflow_ellipsis")
                       )
-                      .append(
-                        $("<td>")
-                          .text(stream.source)
-                          .attr("title", stream.source)
-                          .addClass("description")
-                          .addClass("overflow_ellipsis")
-                          .css("max-width", "20em")
-                      )
+                      // .append(
+                      //   $("<td>")
+                      //     .text(stream.source)
+                      //     .attr("title", stream.source)
+                      //     .addClass("description")
+                      //     .addClass("overflow_ellipsis")
+                      //     .css("max-width", "20em")
+                      // )
                       .append(
                         $("<td>")
                           .data("sort-value", stream.online)
@@ -4414,12 +4243,10 @@ var UI = {
                       )
                       .append($viewers)
                       .append(
-                        $("<td>")
-                          .css("white-space", "nowrap")
-                          .html($preview)
-                          .append($embed)
+                        $("<td>").css("white-space", "nowrap").html($preview)
+                        // .append($embed)
                       )
-                      .append($buttons)
+                    // .append($buttons)
                   );
                   i++;
                 }
@@ -5759,15 +5586,12 @@ var UI = {
                   "Logs:": function (d) {
                     var $logs = $("<div>").text("None.");
                     if (d.logs && d.logs.length) {
-                      $logs
-                        .html("")
-                        .addClass("description")
-                        .css({
-                          overflow: "auto",
-                          maxHeight: "6em",
-                          display: "flex",
-                          flexFlow: "column-reverse nowrap",
-                        });
+                      $logs.html("").addClass("description").css({
+                        overflow: "auto",
+                        maxHeight: "6em",
+                        display: "flex",
+                        flexFlow: "column-reverse nowrap",
+                      });
                       for (var i in d.logs) {
                         var item = d.logs[i];
                         $logs.prepend(
@@ -6563,9 +6387,10 @@ var UI = {
         };
         break;
       case "Push":
-        var $c = $("<div>").text("Loading.."); //will contain everything
+        document.title = "Push: Livepeer Project Aqueduct";
+        UI.elements.header_title.text("Push");
+        var $c = $("<div>").addClass("push_screen").text("Loading.."); //will contain everything
         $main.append($c);
-
         mist.send(
           function (d) {
             $c.html(
@@ -6843,73 +6668,66 @@ var UI = {
               }
             }
 
-            $c.append($("<h3>").text("Automatic pushes"))
-              .append(
-                UI.buildUI([
-                  {
-                    label: "Delay before retry",
-                    unit: "s",
-                    type: "int",
-                    min: 0,
-                    help: "How long the delay should be before MistServer retries an automatic push.<br>If set to 0, it does not retry.",
-                    default: 0,
-                    pointer: {
-                      main: push_settings,
-                      index: "wait",
-                    },
-                    LTSonly: 1,
-                  },
-                  {
-                    label: "Maximum retries",
-                    unit: "/s",
-                    type: "int",
-                    min: 0,
-                    help: "The maximum amount of retries per second (for all automatic pushes).<br>If set to 0, there is no limit.",
-                    default: 0,
-                    pointer: {
-                      main: push_settings,
-                      index: "maxspeed",
-                    },
-                    LTSonly: 1,
-                  },
-                  {
-                    type: "buttons",
-                    buttons: [
-                      {
-                        type: "save",
-                        label: "Save",
-                        function: function () {
-                          mist.send(
-                            function (d) {
-                              UI.navto("Push");
-                            },
-                            {
-                              push_settings: push_settings,
-                            }
-                          );
-                        },
-                      },
-                    ],
-                  },
-                ])
-              )
-              .append(
-                $("<button>")
-                  .text("Add an automatic push")
-                  .click(function () {
-                    UI.navto("Start Push", "auto");
-                  })
-              );
-            if ($autopush.find("tr").length == 1) {
-              $c.append(
-                $("<div>")
-                  .text("No automatic pushes have been configured.")
-                  .addClass("text")
-                  .css("margin-top", "0.5em")
-              );
-            } else {
-              $c.append($autopush);
-            }
+            // $c.append($("<h3>").text("Automatic pushes")).append(
+            //   UI.buildUI([
+            //     {
+            //       label: "Delay before retry",
+            //       unit: "s",
+            //       type: "int",
+            //       min: 0,
+            //       help: "How long the delay should be before MistServer retries an automatic push.<br>If set to 0, it does not retry.",
+            //       default: 0,
+            //       pointer: {
+            //         main: push_settings,
+            //         index: "wait",
+            //       },
+            //       LTSonly: 1,
+            //     },
+            //     {
+            //       label: "Maximum retries",
+            //       unit: "/s",
+            //       type: "int",
+            //       min: 0,
+            //       help: "The maximum amount of retries per second (for all automatic pushes).<br>If set to 0, there is no limit.",
+            //       default: 0,
+            //       pointer: {
+            //         main: push_settings,
+            //         index: "maxspeed",
+            //       },
+            //       LTSonly: 1,
+            //     },
+            //     {
+            //       type: "buttons",
+            //       buttons: [
+            //         {
+            //           type: "save",
+            //           label: "Save",
+            //           function: function () {
+            //             mist.send(
+            //               function (d) {
+            //                 UI.navto("Push");
+            //               },
+            //               {
+            //                 push_settings: push_settings,
+            //               }
+            //             );
+            //           },
+            //         },
+            //       ],
+            //     },
+            //   ])
+            // );
+
+            // if ($autopush.find("tr").length == 1) {
+            //   $c.append(
+            //     $("<div>")
+            //       .text("No automatic pushes have been configured.")
+            //       .addClass("text")
+            //       .css("margin-top", "0.5em")
+            //   );
+            // } else {
+            //   $c.append($autopush);
+            // }
 
             $c.append($("<h3>").text("Pushes")).append(
               $("<button>")
@@ -7075,6 +6893,8 @@ var UI = {
 
         break;
       case "Start Push":
+        document.title = "Start Push: Livepeer Project Aqueduct";
+        UI.elements.header_title.text("Start Push");
         if (!("capabilities" in mist.data)) {
           $main.append("Loading Mist capabilities..");
           mist.send(
@@ -7189,6 +7009,11 @@ var UI = {
               datalist: allthestreams,
               LTSonly: 1,
             },
+            $("<div>")
+              .addClass("text margin")
+              .text(
+                "This may either be a full stream name, a partial wildcard stream name, or a full wildcard stream name. Examples."
+              ),
             {
               label: "Target",
               type: "str",
@@ -7277,6 +7102,14 @@ var UI = {
               },
               LTSonly: 1,
             },
+            $("<div>")
+              .addClass("text")
+              .text(`Where the stream will be pushed to.`),
+            $("<div>")
+              .addClass("text")
+              .text(
+                `Valid formats | Valid Text replacements | Valid URL parameters`
+              ),
             $additional_params,
           ];
 
@@ -7384,7 +7217,14 @@ var UI = {
             ],
           });
 
-          $main.append(UI.buildUI(build));
+          $main.append(
+            $("<span>")
+              .addClass("description")
+              .text("Some explainer text could go here")
+          );
+          $main.append(
+            $("<div>").addClass("start_push_box").append(UI.buildUI(build))
+          );
         }
 
         if (mist.data.LTS) {
@@ -8607,40 +8447,40 @@ var mist = {
             $.extend(mist.data, save);
 
             mist.user.loggedin = true;
-            UI.elements.connection.status
-              .text("Connected")
-              .removeClass("red")
-              .addClass("green");
-            UI.elements.connection.user_and_host.text(
-              mist.user.name + " @ " + mist.user.host
-            );
-            UI.elements.connection.msg
-              .removeClass("red")
-              .text(
-                "Last communication with the server at " +
-                  UI.format.time(new Date().getTime() / 1000)
-              );
+            // UI.elements.connection.status
+            //   .text("Connected")
+            //   .removeClass("red")
+            //   .addClass("green");
+            // UI.elements.connection.user_and_host.text(
+            //   mist.user.name + " @ " + mist.user.host
+            // );
+            // UI.elements.connection.msg
+            //   .removeClass("red")
+            //   .text(
+            //     "Last communication with the server at " +
+            //       UI.format.time(new Date().getTime() / 1000)
+            //   );
 
             //if this is LTS, get rid of the banner on menu buttons
             if (d.LTS) {
               UI.elements.menu.find(".LTSonly").removeClass("LTSonly");
             }
 
-            if (d.log) {
-              var lastlog = d.log[d.log.length - 1];
-              UI.elements.connection.msg
-                .append($("<br>"))
-                .append(
-                  $("<span>").text(
-                    "Last log entry: " +
-                      UI.format.time(lastlog[0]) +
-                      " [" +
-                      lastlog[1] +
-                      "] " +
-                      lastlog[2]
-                  )
-                );
-            }
+            // if (d.log) {
+            //   var lastlog = d.log[d.log.length - 1];
+            // UI.elements.connection.msg
+            //   .append($("<br>"))
+            //   .append(
+            //     $("<span>").text(
+            //       "Last log entry: " +
+            //         UI.format.time(lastlog[0]) +
+            //         " [" +
+            //         lastlog[1] +
+            //         "] " +
+            //         lastlog[2]
+            //     )
+            //   );
+            // }
             if ("totals" in d) {
               //reformat to something more readable
               function reformat(main) {
@@ -8765,11 +8605,11 @@ var mist = {
           case "CHALL":
             if (d.authorize.challenge == mist.user.authstring) {
               //invalid login details
-              if (mist.user.password != "") {
-                UI.elements.connection.msg
-                  .text("The credentials you provided are incorrect.")
-                  .addClass("red");
-              }
+              // if (mist.user.password != "") {
+              //   UI.elements.connection.msg
+              //     .text("The credentials you provided are incorrect.")
+              //     .addClass("red");
+              // }
               UI.navto("Login");
             } else if (mist.user.password == "") {
               //credentials have not yet been entered
@@ -8804,19 +8644,19 @@ var mist = {
       },
     };
 
-    if (!opts.hide) {
-      UI.elements.connection.msg
-        .removeClass("red")
-        .text("Data sent, waiting for a reply..")
-        .append($("<br>"))
-        .append(
-          $("<a>")
-            .text("Cancel request")
-            .click(function () {
-              jqxhr.abort();
-            })
-        );
-    }
+    // if (!opts.hide) {
+    //   UI.elements.connection.msg
+    //     .removeClass("red")
+    //     .text("Data sent, waiting for a reply..")
+    //     .append($("<br>"))
+    //     .append(
+    //       $("<a>")
+    //         .text("Cancel request")
+    //         .click(function () {
+    //           jqxhr.abort();
+    //         })
+    //     );
+    // }
 
     var jqxhr = $.ajax(obj);
   },
