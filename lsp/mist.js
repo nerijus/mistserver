@@ -484,9 +484,9 @@ var UI = {
       Triggers: {
         LTSonly: false,
       },
-      Settings: {
-        LTSonly: false,
-      },
+      // Settings: {
+      //   LTSonly: false,
+      // },
     },
     {
       BottomCard: {
@@ -2944,6 +2944,9 @@ var UI = {
           return;
         }
 
+        // Removed in Catalyst for now...
+        UI.navto("Streams");
+
         var $versioncheck = $("<span>").text("Loading..");
         var $streamsactive = $("<span>");
         var $errors = $("<span>").addClass("logs");
@@ -3853,7 +3856,7 @@ var UI = {
         break;
       case "Streams":
         // Streams Page
-        document.title = "Streams: Livepeer Project Aqueduct";
+        document.title = "Streams: Livepeer Catalyst";
         UI.elements.header_title.text("Streams");
 
         if (!("capabilities" in mist.data)) {
@@ -6387,7 +6390,7 @@ var UI = {
         };
         break;
       case "Push":
-        document.title = "Push: Livepeer Project Aqueduct";
+        document.title = "Push: Livepeer Catalyst";
         UI.elements.header_title.text("Push");
         var $c = $("<div>").addClass("push_screen").text("Loading.."); //will contain everything
         $main.append($c);
@@ -6893,7 +6896,7 @@ var UI = {
 
         break;
       case "Start Push":
-        document.title = "Start Push: Livepeer Project Aqueduct";
+        document.title = "Start Push: Livepeer Catalyst";
         UI.elements.header_title.text("Start Push");
         if (!("capabilities" in mist.data)) {
           $main.append("Loading Mist capabilities..");
