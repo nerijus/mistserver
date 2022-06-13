@@ -27,7 +27,7 @@ def get_environment(*names):
     return env
 
 
-def get_docker_tags(repo, prefix, branch, commit, debug):
+def get_docker_tags(repo, prefix, branch, commit, debug, arch):
     tags = [
         branch.replace("/", "-"),
         commit,
@@ -36,7 +36,7 @@ def get_docker_tags(repo, prefix, branch, commit, debug):
     if branch == "catalyst":
         tags.append("latest")
     suffix = "-debug" if debug else ""
-    return ["%s:%s-%s%s" % (repo, prefix, tag, suffix) for tag in tags]
+    return ["%s:%s-%s%s-%s" % (repo, prefix, tag, suffix, arch) for tag in tags]
 
 
 def docker_image_pipeline(arch, release, stripped, build_context):
@@ -47,6 +47,7 @@ def docker_image_pipeline(arch, release, stripped, build_context):
         build_context.branch,
         build_context.commit,
         debug,
+        arch,
     )
     return {
         "kind": "pipeline",
