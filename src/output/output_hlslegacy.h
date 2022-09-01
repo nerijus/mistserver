@@ -2,10 +2,10 @@
 #include "output_ts_base.h"
 
 namespace Mist{
-  class OutHLS : public TSOutput{
+  class OutHLSLegacy : public TSOutput{
   public:
-    OutHLS(Socket::Connection &conn);
-    ~OutHLS();
+    OutHLSLegacy(Socket::Connection &conn);
+    ~OutHLSLegacy();
     static void init(Util::Config *cfg);
     void sendTS(const char *tsData, size_t len = 188);
     void sendNext();
@@ -30,4 +30,4 @@ namespace Mist{
   };
 }// namespace Mist
 
-typedef Mist::OutHLS mistOut;
+typedef Mist::OutHLSLegacy mistOut;

@@ -1,11 +1,11 @@
-#include "output_hls.h"
+#include "output_hlslegacy.h"
 #include <mist/langcodes.h> /*LTS*/
 #include <mist/stream.h>
 #include <mist/url.h>
 #include <unistd.h>
 
 namespace Mist{
-  bool OutHLS::isReadyForPlay(){
+  bool OutHLSLegacy::isReadyForPlay(){
     if (!isInitialized){return false;}
     meta.reloadReplacedPagesIfNeeded();
     if (!M.getValidTracks().size()){return false;}
@@ -15,11 +15,11 @@ namespace Mist{
     return fragments.getValidCount() > 4;
   }
 
-  bool OutHLS::listenMode(){return !(config->getString("ip").size());}
+  bool OutHLSLegacy::listenMode(){return !(config->getString("ip").size());}
 
   ///\brief Builds an index file for HTTP Live streaming.
   ///\return The index file for HTTP Live Streaming.
-  std::string OutHLS::liveIndex(){
+  std::string OutHLSLegacy::liveIndex(){
     std::stringstream result;
     selectDefaultTracks();
     result << "#EXTM3U\r\n";
@@ -75,7 +75,7 @@ namespace Mist{
     return result.str();
   }
 
-  std::string OutHLS::liveIndex(size_t tid, const std::string &sessId, const std::string &urlPrefix){
+  std::string OutHLSLegacy::liveIndex(size_t tid, const std::string &sessId, const std::string &urlPrefix){
     //Timing track is current track, unless non-video, then time by video track
     size_t timingTid = tid;
     if (M.getType(timingTid) != "video"){timingTid = M.mainTrack();}
@@ -175,7 +175,7 @@ namespace Mist{
     return result.str();
   }
 
-  OutHLS::OutHLS(Socket::Connection &conn) : TSOutput(conn){
+  OutHLSLegacy::OutHLSLegacy(Socket::Connection &conn) : TSOutput(conn){
     uaDelay = 0;
     realTime = 0;
     until = 0xFFFFFFFFFFFFFFFFull;
@@ -189,18 +189,18 @@ namespace Mist{
     }
   }
 
-  OutHLS::~OutHLS(){}
+  OutHLSLegacy::~OutHLSLegacy(){}
 
-  void OutHLS::init(Util::Config *cfg){
+  void OutHLSLegacy::init(Util::Config *cfg){
     HTTPOutput::init(cfg);
     capa.removeMember("deps");
     capa["optdeps"] = "HTTP";
-    capa["name"] = "HLS";
-    capa["friendly"] = "Apple segmented over HTTP (HLS)";
+    capa["name"] = "HLSLegacy";
+    capa["friendly"] = "Apple segmented over HTTP (HLS Legacy)";
     capa["desc"] =
-        "Segmented streaming in Apple (TS-based) format over HTTP ( = HTTP Live Streaming)";
-    capa["url_rel"] = "/hls/$/index.m3u8";
-    capa["url_prefix"] = "/hls/$/";
+        "Segmented streaming in Apple (TS-based) format over HTTP ( = HTTP Live Streaming) (Legacy)";
+    capa["url_rel"] = "/hls-legacy/$/index.m3u8";
+    capa["url_prefix"] = "/hls-legacy/$/";
     capa["codecs"][0u][0u].append("+HEVC");
     capa["codecs"][0u][1u].append("+H264");
     capa["codecs"][0u][2u].append("+MPEG2");
@@ -211,7 +211,7 @@ namespace Mist{
     capa["codecs"][0u][6u].append("+subtitle");
     capa["methods"][0u]["handler"] = "http";
     capa["methods"][0u]["type"] = "html5/application/vnd.apple.mpegurl";
-    capa["methods"][0u]["hrn"] = "HLS (TS)";
+    capa["methods"][0u]["hrn"] = "HLS (TS) (Legacy)";
     capa["methods"][0u]["priority"] = 9;
     // MP3 only works on Edge/Apple
     capa["exceptions"]["codec:MP3"] = JSON::fromString(
@@ -268,14 +268,14 @@ namespace Mist{
     cfg->addConnectorOptions(8081, capa);
   }
 
-  void OutHLS::preHTTP(){
+  void OutHLSLegacy::preHTTP(){
     if (H.GetVar("sessId").size()){
       sid = H.GetVar("sessId");
     }
     HTTPOutput::preHTTP();
   }
 
-  void OutHLS::onHTTP(){
+  void OutHLSLegacy::onHTTP(){
     std::string method = H.method;
     origin = H.GetVar("origin");
 
@@ -318,7 +318,7 @@ namespace Mist{
       return;
     }
 
-    if (H.url.find("hls") == std::string::npos){
+    if (H.url.find("hls-legacy") == std::string::npos){
       onFail("HLS handler active, but this is not a HLS URL. Eh... What...?");
       return;
     }
@@ -432,7 +432,7 @@ namespace Mist{
     }
   }
 
-  void OutHLS::sendNext(){
+  void OutHLSLegacy::sendNext(){
     // First check if we need to stop.
     if (thisPacket.getTime() >= until){
       stop();
@@ -461,9 +461,9 @@ namespace Mist{
     TSOutput::sendNext();
   }
 
-  void OutHLS::sendTS(const char *tsData, size_t len){H.Chunkify(tsData, len, myConn);}
+  void OutHLSLegacy::sendTS(const char *tsData, size_t len){H.Chunkify(tsData, len, myConn);}
 
-  void OutHLS::onFail(const std::string &msg, bool critical){
+  void OutHLSLegacy::onFail(const std::string &msg, bool critical){
     if (HTTP::URL(H.url).getExt().substr(0, 3) != "m3u"){
       HTTPOutput::onFail(msg, critical);
       return;

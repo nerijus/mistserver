@@ -568,6 +568,7 @@ if(RIST_LIB)
 endif()
 makeOutput(HTTPTS httpts       http ts)
 makeOutput(HLS hls             http ts)
+makeOutput(HLSLegacy hlslegacy http ts)
 makeOutput(CMAF cmaf           http)#LTS
 makeOutput(EBML ebml)
 makeOutput(RTSP rtsp)#LTS
